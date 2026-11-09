@@ -1,0 +1,5 @@
+media/*
+!media/.gitkeep
+ai/
+.DS_Store
+
