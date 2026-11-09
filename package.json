@@ -1,0 +1,12 @@
+{
+  "name": "haunt-generator",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Local procedural Halloween image generator and projector player",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
