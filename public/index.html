@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#120e20">
+  <title>Haunt Generator</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="Haunt Generator home">
+        <span class="brand-mark">✦</span>
+        <span><strong>HAUNT</strong><small>GENERATOR</small></span>
+      </a>
+      <div class="topbar-actions">
+        <span class="connection-pill"><i></i><span id="connectionText">LOCAL LIBRARY</span></span>
+        <button class="icon-button" id="helpButton" title="Keyboard shortcuts" aria-label="Keyboard shortcuts">?</button>
+      </div>
+    </header>
+
+    <main class="main-layout">
+      <aside class="sidebar">
+        <div class="sidebar-intro">
+          <div class="eyebrow">HALLOWEEN 2026</div>
+          <h1>Set the<br><em>scene.</em></h1>
+          <p>Load the night. Take over the wall.</p>
+        </div>
+        <nav class="side-nav" aria-label="Media filters">
+          <button class="nav-item active" data-filter="all"><span>◈</span> All media <b id="allCount">0</b></button>
+          <button class="nav-item" data-filter="video"><span>▶</span> Videos <b id="videoCount">0</b></button>
+          <button class="nav-item" data-filter="photo"><span>▧</span> Photos <b id="photoCount">0</b></button>
+          <button class="nav-item" data-filter="gif"><span>∞</span> GIFs <b id="gifCount">0</b></button>
+        </nav>
+        <div class="sidebar-footer">
+          <div class="shortcut-line"><kbd>←</kbd><kbd>→</kbd> change scene</div>
+          <div class="shortcut-line"><kbd>F</kbd> fullscreen</div>
+        </div>
+      </aside>
+
+      <section class="content">
+        <div class="content-header">
+          <div>
+            <div class="eyebrow">YOUR LIBRARY</div>
+            <h2 id="sectionTitle">All media <span id="sectionCount">0</span></h2>
+          </div>
+          <div class="header-actions">
+            <label class="ai-slideshow-toggle" title="Let the local prompt model create one fresh Halloween scene at a time"><input id="aiSlideshowToggle" type="checkbox"><span>AI scenes</span></label>
+            <label class="ai-slideshow-toggle" title="Use darker gothic-fairytale prompt directions"><input id="gothicScenes" type="checkbox"><span>Gothic mood</span></label>
+            <button class="secondary-button" id="slideshowButton"><span>▤</span> Play slideshow</button>
+            <label class="primary-button upload-button"><span>＋</span> Add media<input id="fileInput" type="file" accept="image/*,video/*,audio/*" multiple></label>
+          </div>
+        </div>
+
+        <section class="dropzone" id="dropzone" aria-label="Upload media">
+          <div class="drop-icon">✦</div>
+          <div><strong>Drop your scenes here</strong><span>Photos, videos, GIFs, and audio — everything stays on this host.</span></div>
+          <button class="text-button" id="browseButton">Browse files</button>
+        </section>
+        <div class="upload-status" id="uploadStatus" role="status" aria-live="polite"></div>
+
+        <section class="ai-panel" aria-labelledby="aiPanelTitle">
+          <div class="ai-panel-heading">
+            <div><div class="eyebrow">LOCAL GENERATOR</div><h3 id="aiPanelTitle">Make a few scenes with FastSD CPU <span>✦</span></h3></div>
+            <span class="ai-status" id="aiStatus">Checking local runtimes…</span>
+          </div>
+          <div class="ai-controls">
+            <label class="prompt-field">Prompt<input id="aiPrompt" value="A cinematic haunted forest at midnight, warm orange lanterns, purple fog, elegant Halloween atmosphere, no text" maxlength="1000"></label>
+            <label class="small-field">Images<input id="aiCount" type="number" value="3" min="1" max="8"></label>
+            <label class="interval-field">Seconds / image <output id="intervalValue">5s</output><input id="intervalInput" type="range" min="1" max="30" value="5"></label>
+            <button class="primary-button ai-generate-button" id="generateButton">Generate &amp; play</button>
+          </div>
+          <div class="save-ai-note">Generated scenes are saved to the media folder automatically.</div>
+          <div class="ai-progress" id="aiProgress" role="status" aria-live="polite"></div>
+        </section>
+
+        <div class="toolbar">
+          <label class="search-box"><span>⌕</span><input id="searchInput" placeholder="Search your library" autocomplete="off"><kbd>/</kbd></label>
+          <div class="toolbar-right"><span id="selectionText">0 selected</span><button class="text-button" id="clearSelectionButton">Clear selection</button></div>
+        </div>
+
+        <div class="media-grid" id="mediaGrid"></div>
+        <div class="empty-state" id="emptyState" hidden>
+          <div class="empty-art">☾</div>
+          <h3>Your wall is waiting.</h3>
+          <p>Add a few photos or videos to start building your party loop.</p>
+          <button class="primary-button" id="emptyBrowseButton">Add your first scene</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="player-overlay" id="playerOverlay" hidden>
+    <div class="player-backdrop"></div>
+    <div class="player-ui">
+      <div class="player-topline">
+        <div><span class="player-kicker">NOW PLAYING</span><strong id="playerTitle">—</strong></div>
+        <div class="player-meta"><span id="playerCounter">1 / 1</span><button class="player-close" id="closePlayer" aria-label="Close player">×</button></div>
+      </div>
+      <div class="stage" id="stage"></div>
+      <div class="player-controls">
+        <button class="round-control" id="previousButton" title="Previous (left arrow)">←</button>
+        <button class="round-control main-control" id="pauseButton" title="Play or pause">Ⅱ</button>
+        <button class="round-control" id="nextButton" title="Next (right arrow)">→</button>
+        <div class="player-spacer"></div>
+        <span class="slideshow-status" id="slideshowStatus"></span>
+        <button class="player-control-button stop-ai-button" id="stopAiButton" hidden>■ Stop AI</button>
+        <button class="player-control-button" id="playerFullscreenButton">⛶ Fullscreen</button>
+      </div>
+    </div>
+  </div>
+
+  <dialog id="helpDialog" class="help-dialog">
+    <button class="dialog-close" id="closeHelp" aria-label="Close">×</button>
+    <div class="eyebrow">QUICK CONTROLS</div>
+    <h2>Keep the room moving.</h2>
+    <div class="help-row"><kbd>←</kbd><kbd>→</kbd><span>Previous / next scene</span></div>
+    <div class="help-row"><kbd>Space</kbd><span>Play / pause video</span></div>
+    <div class="help-row"><kbd>F</kbd><span>Enter fullscreen</span></div>
+    <div class="help-row"><kbd>Esc</kbd><span>Close player / exit fullscreen</span></div>
+  </dialog>
+
+  <script src="/app.js?v=fastsd-llm7"></script>
+</body>
+</html>
